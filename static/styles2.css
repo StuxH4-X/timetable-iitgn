@@ -1,0 +1,152 @@
+*{
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1700px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+}
+
+
+.table-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+td {
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word; 
+    vertical-align: top; 
+}
+
+th,
+td {
+    width: auto;
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    border-left: 0.5px solid #ccc;
+}
+
+th.slot-column {
+    width: 130px; 
+}
+
+th {
+    background-color: #f4f4f9;
+}
+
+td:hover{
+    background-color: #f9f9f9;
+}
+
+table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f4f4f9;
+    z-index: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.conflict-cell {
+    padding: 0;
+}
+.conflict-course {
+    height: auto;
+    width: 100%;
+    border: 0.3px solid #ccc;
+    padding: 5px;
+    margin: 2px 0; 
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
+    text-align: left;
+}
+
+#downloadExcelButton{
+    margin-top: 10px;
+}
+
+
+.btn{
+    align-items: center;
+    background-color: #f4f4f9;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: .25rem;
+    box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+    box-sizing: border-box;
+    color: rgba(0, 0, 0, 0.85);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 16px;
+    font-weight: 600;
+    justify-content: center;
+    line-height: 1.25;
+    margin: 0;
+    min-height: 3rem;
+    padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+    position: relative;
+    text-decoration: none;
+    transition: all 250ms;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: baseline;
+    width: auto;
+
+}
+
+.btn:hover,
+.btn:focus {
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:focus{
+    background-color: #e4e4e9;
+}
+
+.btn:active {
+  background-color: #F0F0F1;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+  color: rgba(0, 0, 0, 0.65);
+  transform: translateY(0);
+}
+
+.btn-adjust{
+    margin:1rem;
+    display: flex;
+    justify-content: center;
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles2.css') }}"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        const timeSlotsData = {{ time_slots_data|tojson }};
+        const selectedData = {{ selected_data | tojson }};
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Time Slots Viewer</h1>
+
+        <div class="btn-adjust">
+            <button id="firstHalfButton" class="btn">First Half</button>
+            <button id="secondHalfButton" class="btn">Second Half</button>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="slot-column">Slot</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            
+        </div>
+        <button id="downloadExcelButton" class="btn btn-down">Download</button>
+    </div>
+    <script src="{{ url_for('static', filename='script2.js') }}"></script>
+</body>
+</html>

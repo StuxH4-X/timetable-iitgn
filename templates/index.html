@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Courses</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        const tableData = {{ table_data|tojson }};
+    </script>
+</head>
+<body>
+    <div class="container">
+        <button id="backButton" style="display: none;" class="back-btn">&#11178</button>
+
+        <h1>Timetable Generator</h1>
+        
+        <div id="searchSection">
+            <input type="text" id="searchBar" placeholder="Search Course Name..." oninput="searchTable(this.value)">
+        </div>
+        
+        <div class="table-container">
+            <table id="timetable">
+                <thead>
+                    <tr>
+                        
+                        <th>Code</th>
+                        <th>Course Name</th>
+                        <th>L</th>
+                        <th>T</th>
+                        <th>P</th>
+                        <th>C</th>
+                        <th>Name of the Instructors and Tutors</th>
+                        <th>Lecture</th>
+                        <th>Tutorial</th>
+                        <th>Lab</th>
+                        <th>HSS/BS elective</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-adjust">
+            <button id="proceedButton" class="btn btn-proceed">Proceed</button>
+        </div>
+        
+        <div id="summarySection" style="display: none;"></div>
+        <div class="btn-adjust">
+        <button id="exportButton" class="btn" style="display: none;">Generate</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
