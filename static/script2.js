@@ -75,7 +75,10 @@ function renderTableWithConflicts(data, slotMapping, table = tableBody) {
                 } else {
                     td.textContent = courses[0];
                 }
-            } else {
+            } else if (slot.match(/[A-Z][0-9]/)){
+                td.textContent= "";
+            }
+            else {
                 td.textContent = row[key] || "";
             }
 
@@ -116,8 +119,11 @@ function downloadTableAsExcel(sheetName = "TimeTable") {
                 if (slot && slotMapping[slot]) {
                     const courses = slotMapping[slot];
                     td.textContent = courses.length > 1 ? courses.join(",") : courses[0];
-                } else {
-                    td.textContent = row[key] || "";
+                }  else if (slot.match(/[A-Z][0-9]/)){
+                    td.textContent= "";
+                }
+                else {
+                td.textContent = row[key] || "";
                 }
                 tr.appendChild(td);
             });
