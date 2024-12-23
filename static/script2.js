@@ -49,6 +49,14 @@ function mapCoursesToSlots(selectedData) {
     return slotMapping;
 }
 
+const colors = ["#FDFCEC","#FEF4EB","#FFEBEC","#F8DEF3","#E8DEF8","#C9DCF8","#C7EDF9","#B4F3F8","#C7F9EF","#D8FDDD","#FBF8CC","#FDE4CF","#FFCFD2","#F1C0E8","#CFBAF0","#A3C4F3","#90DBF4","#8EECF5","#98F5E1","#B9FBC0"]
+
+const uniqueCourses = [...new Set(selectedData.map(course => course["Course Name"].replace(/\s*\(.*?\)\s*/g, "").trim()))];
+const courseColors = {};
+uniqueCourses.forEach((course, index) => {
+    courseColors[course] = colors[index % colors.length];
+});
+
 function renderTableWithConflicts(data, slotMapping, table = tableBody) {
     if (!Array.isArray(data) || !slotMapping) {
         console.warn("Invalid data or slot mapping!");
@@ -66,14 +74,18 @@ function renderTableWithConflicts(data, slotMapping, table = tableBody) {
 
             if (slot && slotMapping[slot]) {
                 const courses = slotMapping[slot];
-
+                
                 if (courses.length > 1) {
                     td.innerHTML = courses
-                        .map(course => `<div class="conflict-course">${course}</div>`)
-                        .join("");
+                    .map(course => {
+                        const color = courseColors[course.replace(/\s*\(.*?\)\s*/g, "").trim()] || "#FFFFFF"; 
+                        return `<div class="conflict-course" style="background-color:${color};">${course}</div>`;
+                    })
+                    .join("");
                     td.classList.add("conflict-cell");
                 } else {
                     td.textContent = courses[0];
+                    td.style.backgroundColor = courseColors[courses[0].replace(/\s*\(.*?\)\s*/g, "").trim()];
                 }
             } else if (slot.match(/[A-Z][0-9]/)){
                 td.textContent= "";
