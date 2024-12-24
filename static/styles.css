@@ -8,6 +8,9 @@ body {
     color: #333;
     margin: 0;
     padding: 0;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: break-word; 
 }
 
 .container {
@@ -62,6 +65,7 @@ table {
 
 th,
 td {
+    max-width: 300px;
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid #ddd;
