@@ -4,7 +4,7 @@ const summarySection = document.getElementById("summarySection");
 
 
 const headers = [
-    "E", "Course Name", "L", "T", "P", "C",
+    "Course Number", "Course Name", "L", "T", "P", "C",
     "Name of the Instructors and Tutors", "Lecture", "Tutorial", "Lab", "HSS/BS elective"
 ];
 
@@ -171,7 +171,7 @@ function searchTable(query) {
         if (!query.trim()) {
             row.searched = 0;
         } else {
-            const searchColumns = ["E", "Course Name", "Name of the Instructors and Tutors"];
+            const searchColumns = ["Course Number", "Course Name", "Name of the Instructors and Tutors"];
             const isRelevant = searchColumns.some(key => {
                 const cellValue = row[key];
                 return typeof cellValue === "string" && cellValue.toLowerCase().includes(lowerQuery);
