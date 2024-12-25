@@ -38,6 +38,11 @@ table {
     table-layout: fixed;
 }
 
+table tr{
+    display: grid;
+    grid-template-columns: 128px 306px 306px 306px 306px 306px;
+}
+
 td {
     word-wrap: break-word;
     white-space: normal;
@@ -76,16 +81,13 @@ table thead th {
 
 .conflict-cell {
     padding: 0;
+    display: grid;
+    grid-template-columns: 305px;
 }
 .conflict-course {
     height: auto;
     width: 100%;
-    border: 0.3px solid #ccc;
     padding: 5px;
-    margin: 2px 0; 
-    word-wrap: break-word;
-    white-space: normal;
-    overflow-wrap: break-word;
     text-align: left;
 }
 
