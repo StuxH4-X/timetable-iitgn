@@ -89,6 +89,8 @@ function renderTableWithConflicts(data, slotMapping, table = tableBody) {
                 }
             } else if (slot.match(/[A-Z][0-9]/)){
                 td.textContent= "";
+                td.addEventListener("mouseenter",()=>td.textContent = row[key] || "");
+                td.addEventListener("mouseleave",()=>td.textContent = "");
             }
             else {
                 td.textContent = row[key] || "";
