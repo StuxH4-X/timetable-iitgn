@@ -1,7 +1,9 @@
 const tableBody = document.getElementById("tableBody");
 const proceedButton = document.getElementById("proceedButton");
 const summarySection = document.getElementById("summarySection");
-
+const backButton = document.getElementById("backButton");
+const exportButton = document.getElementById("exportButton");
+const searchBar = document.getElementById("searchBar");
 
 const headers = [
     "Course Number", "Course Name", "L", "T", "P", "C",
@@ -10,142 +12,115 @@ const headers = [
 
 function sortData() {
     tableData.sort((a, b) => {
-        if (a.priority === -1 && b.priority !== -1) return 1; 
-        if (b.priority === -1 && a.priority !== -1) return -1; 
-        if (a.priority !== b.priority) return a.priority - b.priority; 
-        if (b.searched !== a.searched) return b.searched - a.searched; 
-        return a.index - b.index; 
+        if (a.priority === -1 && b.priority !== -1) return 1;
+        if (b.priority === -1 && a.priority !== -1) return -1;
+        if (a.priority !== b.priority) return a.priority - b.priority;
+        if (b.searched !== a.searched) return b.searched - a.searched;
+        return a.index - b.index;
     });
 }
 
-
 function toggleSelection(row) {
-    if (row.priority > -1) {
-        row.priority = -1; 
-    } else {
-        const maxPriority = Math.max(...tableData.map(r => (r.priority > -1 ? r.priority : 0)));
-        row.priority = maxPriority + 1; 
-    }
+    row.priority = row.priority > -1 ? -1 : Math.max(...tableData.map(r => r.priority > -1 ? r.priority : 0)) + 1;
     renderTable();
 }
 
-
 function extractSlotsFromJSON(courseData) {
     const slotColumns = ["Lecture", "Tutorial", "Lab"];
-    const slots = [];
-
-    slotColumns.forEach(colName => {
+    return slotColumns.flatMap(colName => {
         const cellContent = courseData[colName]?.trim();
-        if (cellContent) {
-            const slotMatch = cellContent.match(/[A-Z]\d+/g); 
-            if (slotMatch) slots.push(...slotMatch);
-        }
+        return cellContent ? (cellContent.match(/[A-Z]\d+/g) || []) : [];
     });
-
-    return slots;
 }
 
+function renderRow(row, occupiedSlots, isSummary) {
+    const tr = document.createElement("tr");
+
+    if (!isSummary) {
+        tr.addEventListener("click", event => {
+            if (event.target.type !== "checkbox") toggleSelection(row);
+        });
+    }
+
+    headers.forEach(key => {
+        const td = document.createElement("td");
+        if (isSummary && ["Lecture", "Tutorial", "Lab"].includes(key)) {
+            td.contentEditable = true;
+            td.textContent = row[key];
+            td.addEventListener("blur", () => {
+                row[key] = td.textContent.trim();
+                renderClashSummary(getOccupiedSlots());
+            });
+        } else {
+            td.textContent = row[key];
+        }
+        tr.appendChild(td);
+    });
+
+    if (!isSummary && row.priority > -1) tr.classList.add("highlight2");
+    if (!isSummary && row.searched === 1) tr.classList.add("highlight");
+
+    if (!isSummary && row.priority === -1) {
+        const rowSlots = extractSlotsFromJSON(row);
+        if (rowSlots.some(slot => occupiedSlots.includes(slot))) tr.classList.add("strike-through");
+    }
+
+    tableBody.appendChild(tr);
+}
 
 function renderTable(isSummary = false) {
     sortData();
-
-    const occupiedSlots = tableData
-        .filter(row => row.priority > -1)
-        .flatMap(row => extractSlotsFromJSON(row));
-
     tableBody.innerHTML = "";
-
+    const occupiedSlots = getOccupiedSlots();
     tableData.forEach(row => {
-        if (isSummary && row.priority === -1) return; 
-
-        const tr = document.createElement("tr");
-
-        
-        if (!isSummary) {
-            tr.addEventListener("click", event => {
-                if (event.target.type !== "checkbox") toggleSelection(row);
-            });
-        }
-
-        
-        headers.forEach(key => {
-            const td = document.createElement("td");
-
-            if (isSummary && ["Lecture", "Tutorial", "Lab"].includes(key)) {
-                
-                td.contentEditable = true;
-                td.textContent = row[key];
-                td.addEventListener("blur", () => {
-                    row[key] = td.textContent.trim(); 
-                    renderClashSummary(getOccupiedSlots()); 
-                });
-            } else {
-                td.textContent = row[key];
-            }
-
-            tr.appendChild(td);
-        });
-
-        
-        if (!isSummary && row.priority > -1) {
-            tr.classList.add("highlight2");
-        } else {
-            tr.classList.remove("highlight2");
-        }
-
-        if (!isSummary && row.searched === 1) {
-            tr.classList.add("highlight");
-        } else {
-            tr.classList.remove("highlight");
-        }
-
-        
-        const rowSlots = extractSlotsFromJSON(row);
-        const hasClash = rowSlots.some(slot => occupiedSlots.includes(slot));
-        if (hasClash && row.priority === -1 && !isSummary) {
-            tr.classList.add("strike-through");
-        } else {
-            tr.classList.remove("strike-through");
-        }
-
-        tableBody.appendChild(tr);
+        if (isSummary && row.priority === -1) return;
+        renderRow(row, occupiedSlots, isSummary);
     });
-
     if (isSummary) renderClashSummary(occupiedSlots);
 }
 
 function getOccupiedSlots() {
-    return tableData
-        .filter(row => row.priority > -1)
-        .flatMap(row => extractSlotsFromJSON(row));
+    return tableData.filter(row => row.priority > -1).flatMap(row => extractSlotsFromJSON(row));
+}
+
+function filterCoursesByHalf(selectedData, halfType) {
+    return selectedData.filter(course => {
+        const courseName = course["Course Name"];
+        if (courseName.includes(halfType)) return true;
+        return !courseName.includes("First Half") && !courseName.includes("Second Half");
+    });
 }
 
 function renderClashSummary(occupiedSlots) {
-    const selectedCourses = tableData.filter(row => row.priority > -1); 
+    const selectedCourses = tableData.filter(row => row.priority > -1);
+    const firstHalfData = filterCoursesByHalf(selectedCourses, "First Half");
+    const secondHalfData = filterCoursesByHalf(selectedCourses, "Second Half");
     const clashes = [];
 
-    
-    for (let i = 0; i < selectedCourses.length; i++) {
-        for (let j = i + 1; j < selectedCourses.length; j++) {
-            const course1 = selectedCourses[i];
-            const course2 = selectedCourses[j];
-            const slots1 = extractSlotsFromJSON(course1);
-            const slots2 = extractSlotsFromJSON(course2);
-
-            
-            const intersectingSlots = slots1.filter(slot => slots2.includes(slot));
-
-            if (intersectingSlots.length > 0) {
-                clashes.push({
-                    course1: course1["Course Name"],
-                    course2: course2["Course Name"],
+    function findClashes(data) {
+        for (let i = 0; i < data.length; i++) {
+            for (let j = i + 1; j < data.length; j++) {
+                const slots1 = extractSlotsFromJSON(data[i]);
+                const slots2 = extractSlotsFromJSON(data[j]);
+                const intersectingSlots = slots1.filter(slot => slots2.includes(slot));
+                const clashElement={
+                    course1: data[i]["Course Name"],
+                    course2: data[j]["Course Name"],
                     slots: intersectingSlots
-                });
+                };
+                if (intersectingSlots.length > 0 && !clashes.some(clash => 
+                    clash.course1 === clashElement.course1 && 
+                    clash.course2 === clashElement.course2 && 
+                    clash.slots.join() === clashElement.slots.join())) {
+                    clashes.push(clashElement);
+                }
             }
         }
     }
 
-    
+    findClashes(firstHalfData);
+    findClashes(secondHalfData);
+
     summarySection.innerHTML = `
         <p>* Make sure to personalize the timetable by changing the slots and venues to the ones assigned to you, but do not mess with the format i.e. Slot (Venue) for eg. P1 (7/101)</p>
         <h3>Clash Summary</h3>
@@ -154,105 +129,69 @@ function renderClashSummary(occupiedSlots) {
                 <li>
                     <strong>${clash.course1}</strong> clashes with <strong>${clash.course2}</strong> due to slots: 
                     <em>${clash.slots.join(", ")}</em>
-                </li>
-            `).join("")}</ul>`
+                </li>`).join("")}</ul>`
             : "<p>No clashes detected among selected courses.</p>"
         }
     `;
 }
 
-
-
-
 function searchTable(query) {
     const lowerQuery = query.toLowerCase();
-
     tableData.forEach(row => {
-        if (!query.trim()) {
-            row.searched = 0;
-        } else {
-            const searchColumns = ["Course Number", "Course Name", "Name of the Instructors and Tutors"];
-            const isRelevant = searchColumns.some(key => {
-                const cellValue = row[key];
-                return typeof cellValue === "string" && cellValue.toLowerCase().includes(lowerQuery);
-            });
-            row.searched = isRelevant ? 1 : 0;
-        }
+        row.searched = query.trim() && headers.some(key => {
+            const cellValue = row[key];
+            return typeof cellValue === "string" && cellValue.toLowerCase().includes(lowerQuery);
+        }) ? 1 : 0;
     });
-
     renderTable();
 }
 
-
 function resetSearch() {
-    document.getElementById("searchBar").value = "";
+    searchBar.value = "";
     tableData.forEach(row => (row.searched = 0));
     renderTable();
 }
 
-
 function extractSelectedCoursesAsJSON() {
-    const selectedCourses = tableData
-        .filter(row => row.priority > -1) 
-        .map(row => {
-            const selectedData = {}; 
-            headers.forEach(header => {
-                selectedData[header] = row[header];
-            });
-            return selectedData;
+    const selectedCourses = tableData.filter(row => row.priority > -1).map(row => {
+        const selectedData = {};
+        headers.forEach(header => {
+            selectedData[header] = row[header];
         });
-
-    return JSON.stringify(selectedCourses, null, 2); 
+        return selectedData;
+    });
+    return JSON.stringify(selectedCourses, null, 2);
 }
 
-document.getElementById("exportButton").addEventListener("click", () => {
-    const selectedCoursesJSON = extractSelectedCoursesAsJSON(); 
-
-    
+exportButton.addEventListener("click", () => {
+    const selectedCoursesJSON = extractSelectedCoursesAsJSON();
     fetch("/save_selected_courses", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: selectedCoursesJSON,
     })
         .then(response => {
-            if (response.ok) {
-                window.location.href = "/timetable"; 
-            }
+            if (response.ok) window.location.href = "/timetable";
         })
-        .catch(err => {
-            console.error("Error saving courses:", err);
-        });
+        .catch(err => console.error("Error saving courses:", err));
 });
-
-
-const backButton = document.getElementById("backButton");
-
 
 backButton.addEventListener("click", () => {
-    document.getElementById("searchSection").style.display = "block"; 
-    document.getElementById("proceedButton").style.display = "block"; 
-    document.getElementById("summarySection").style.display = "none"; 
-    document.getElementById("exportButton").style.display = "none"; 
-    backButton.style.display = "none"; 
-
-    renderTable(); 
+    document.getElementById("searchSection").style.display = "block";
+    proceedButton.style.display = "block";
+    summarySection.style.display = "none";
+    exportButton.style.display = "none";
+    backButton.style.display = "none";
+    renderTable();
 });
-
 
 proceedButton.addEventListener("click", () => {
-    document.getElementById("searchSection").style.display = "none"; 
-    document.getElementById("proceedButton").style.display = "none"; 
-    document.getElementById("summarySection").style.display = "block"; 
-    document.getElementById("exportButton").style.display = "block"; 
-    backButton.style.display = "block"; 
-
-    renderTable(true); 
+    document.getElementById("searchSection").style.display = "none";
+    proceedButton.style.display = "none";
+    summarySection.style.display = "block";
+    exportButton.style.display = "block";
+    backButton.style.display = "block";
+    renderTable(true);
 });
 
-
-
 renderTable();
-
-
