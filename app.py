@@ -50,7 +50,7 @@ def save_selected_courses():
 def timetable_page():
     global selected_courses
     try:
-        df = pd.read_excel(FILE_PATH, sheet_name="Time Slots", na_filter=False, skiprows=[0, 5])
+        df = pd.read_excel(FILE_PATH, sheet_name="Time Slots", na_filter=False)  #, skiprows=[0, 5]
 
         time_slots_data = df.to_dict(orient="records")
 
