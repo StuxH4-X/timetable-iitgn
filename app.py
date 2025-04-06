@@ -9,7 +9,7 @@ from openpyxl.styles import Alignment
 
 app = Flask(__name__)
 
-FILE_PATH = "Timetable 2024-25, Sem-II.xlsx"
+FILE_PATH = "Timetable, Sem-I, 2025-26.xlsx"
 
 @app.route("/", methods=["GET"])
 def main_page():
