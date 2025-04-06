@@ -6,7 +6,7 @@ const exportButton = document.getElementById("exportButton");
 const searchBar = document.getElementById("searchBar");
 
 const headers = [
-    "Course Number", "Course Name", "L", "T", "P", "C",
+    "Course Code", "Course Name", "L", "T", "P", "C",
     "Name of the Instructors and Tutors", "Lecture", "Tutorial", "Lab", "HSS/BS elective"
 ];
 
