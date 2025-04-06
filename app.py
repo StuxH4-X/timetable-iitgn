@@ -18,7 +18,7 @@ def main_page():
         df = pd.read_excel(FILE_PATH, sheet_name="Time table", na_filter=False)
 
         selected_columns = [
-            "Course Number", "Course Name", "L", "T", "P", "C",
+            "Course Code", "Course Name", "L", "T", "P", "C",
             "Name of the Instructors and Tutors", "Lecture", "Tutorial", "Lab", "HSS/BS elective"
         ]
         df = df[selected_columns]
