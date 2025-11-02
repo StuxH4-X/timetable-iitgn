@@ -9,7 +9,7 @@ from openpyxl.styles import Alignment
 
 app = Flask(__name__)
 
-FILE_PATH = "Timetable, Sem-I, 2025-26.xlsx"
+FILE_PATH = "Timetable, Sem-II, 2025-26.xlsx"
 
 @app.route("/", methods=["GET"])
 def main_page():
@@ -18,7 +18,7 @@ def main_page():
         df = pd.read_excel(FILE_PATH, sheet_name="Time table", na_filter=False)
 
         selected_columns = [
-            "Course Code", "Course Name", "L", "T", "P", "C",
+            "Course Number", "Course Name", "L", "T", "P", "C",
             "Name of the Instructors and Tutors", "Lecture", "Tutorial", "Lab", "HSS/BS elective"
         ]
         df = df[selected_columns]
@@ -94,3 +94,4 @@ def process_excel():
         )
     except Exception as e:
         return f"Error processing Excel file: {str(e)}", 500
+
